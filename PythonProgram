@@ -1,0 +1,33 @@
+import pandas as pd
+import matplotlib.pyplot as plt
+
+
+if __name__ == "__main__":
+
+    df = pd.read_excel("/Users/taliaboneh/Desktop/DATE_MinutesStatistics.xlsx")
+    print(df.head())
+
+    # Remove rows with '-' in any column
+    df_cleaned = df[~(df == '-').any(axis=1)]
+
+    # Convert relevant columns to numeric (in case they are still strings)
+    df_cleaned['Mobility state.6'] = pd.to_numeric(df_cleaned['Mobility state.6'], errors='coerce')
+    df_cleaned['Mobility state.2'] = pd.to_numeric(df_cleaned['Mobility state.2'], errors='coerce')
+
+    # Drop rows 0, 1, and 2 by index
+    df_cleaned = df_cleaned.drop(index=[0, 1, 2], errors='ignore')
+
+    # Add the two columns into a new column 'Summation'
+    df_cleaned['Summation'] = df_cleaned['Mobility state.6'] + df_cleaned['Mobility state.2']
+
+    print(df_cleaned.head())
+
+    # Plot histogram of the Summation column
+    plt.figure(figsize=(8, 6))
+    plt.hist(df_cleaned['Summation'].dropna(), bins=20, color='skyblue', edgecolor='black')
+    plt.title('Histogram of Summation')
+    plt.xlabel('Summation Value')
+    plt.ylabel('Frequency')
+    plt.grid(True)
+    plt.tight_layout()
+    plt.show()
